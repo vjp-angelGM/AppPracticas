@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="logo1.ico">
+    <title>Guia HORECA Chinata | Malpartida de Plasencia</title>
+    <style>
+        :root {
+            --primary: #2e5c3d;
+            --light: #f8f9f5;
+            --mid: #5a6b5e;
+            --dark: #1f2a24;
+            --border: #cbd5e1;
+            --radius: 16px;
+            --radius-header: 20px;
+            --olive: #4a6b3e;
+            --olive-light: #e8f0e4;
+            --terra: #c2603a;
+            --terra-light: #fce8e0;
+            --blue-light: #e0f0f5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Selector de Idioma */
+        #language-screen {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.0)),
+                url('https://turismomonfrague.es/wp-content/uploads/2021/12/Malpartida-de-Plasencia_PGE_ON-6.jpg') center/cover no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            color: white;
+        }
+
+        .lang-container {
+            text-align: center;
+            max-width: 380px;
+            width: 90%;
+            background: rgba(255, 252, 252, 0.85);
+            padding: 2rem 1.5rem;
+            border-radius: 20px;
+            backdrop-filter: blur(2px);
+        }
+
+        .lang-container img {
+            max-width: 90%;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Texto de instrucción mejorado para legibilidad */
+        .lang-container p {
+            margin-bottom: 2rem;
+            color: #1f2a24;
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: -0.2px;
+            text-shadow: none;
+            background-color: rgba(255,255,240,0.6);
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            backdrop-filter: blur(4px);
+        }
+
+        .languages {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px 30px;
+            justify-items: center;
+            align-items: center;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 280px;
+        }
+
+        .lang-option {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            transition: transform 0.2s;
+        }
+
+        .lang-option img {
+            width: 70px;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+
+        .lang-option:hover img {
+            transform: scale(1.08);
+        }
+
+        /* Pantallas con transiciones */
+        .page {
+            display: none;
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Animaciones de transición */
+        .slide-out {
+            animation: slideOutLeft 0.3s ease forwards;
+        }
+
+        .slide-in {
+            animation: slideInRight 0.3s ease forwards;
+        }
+
+        .slide-out-back {
+            animation: slideOutRight 0.3s ease forwards;
+        }
+
+        .slide-in-back {
+            animation: slideInLeft 0.3s ease forwards;
+        }
+
+        @keyframes slideOutLeft {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(-30px); opacity: 0; }
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(30px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(30px); opacity: 0; }
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-30px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Efecto Ripple */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0);
+            animation: rippleAnim 0.6s linear;
+            pointer-events: none;
+            z-index: 20;
+        }
+
+        @keyframes rippleAnim {
+            to { transform: scale(4); opacity: 0; }
+        }
+
+        /* App principal */
+        header {
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.65rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .hero {
+            background: var(--light);
+            text-align: center;
+            padding: 2.5rem 1rem 2rem;
+        }
+
+        .hero h2 {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 0 1rem;
+            margin-bottom: 100px;
+        }
+
+        .card {
+            border-radius: var(--radius);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+            cursor: pointer;
+            min-height: 165px;
+            position: relative;
+        }
+
+        .card-conoce { background: #8AB0BE; color: white; }
+        .card-hacer { background: #7A8C3E; color: white; }
+        .card-comer { background: #C2603A; color: white; }
+        .card-dormir { background: #e8c45a; color: #1f2a24; }
+
+        .card-icon {
+            height: 85px;
+            font-size: 2.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .card-body {
+            padding: 0.9rem;
+            text-align: center;
+        }
+
+        /* Footer fijo global */
+        .global-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 0.8rem 1rem;
+            text-align: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 9999;
+        }
+
+        .logos-container img {
+            width: 100%;
+            max-width: 350px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .footer-text {
+            font-size: 12px;
+            color: var(--mid);
+            margin-bottom: 4px;
+        }
+
+        .cards-grid {
+            padding-bottom: 100px;
+        }
+
+        /* Pantalla Detalle */
+        #detail-screen {
+            background: var(--light);
+            overflow-y: auto;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 2000;
+        }
+
+        #detail-content {
+            padding-bottom: 90px;
+        }
+
+        /* Cabecera más redondeada */
+        .detail-header {
+            padding: 1rem 1.2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-radius: 0 0 var(--radius-header) var(--radius-header);
+        }
+
+        .back-btn {
+            font-size: 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: white;
+            position: relative;
+        }
+
+        #detail-title {
+            color: white;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .screen {
+            padding-bottom: 2rem;
+        }
+
+        .divider {
+            height: 4px;
+            background: rgba(0, 0, 0, 0.08);
+        }
+
+        .scroll-body {
+            padding: 0 1rem 0;
+        }
+
+        .section {
+            padding: 14px 16px;
+        }
+
+        /* Tarjetas base (para conoce, sin imagen) */
+        .info-card {
+            background: #fff;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 14px;
+            margin-bottom: 10px;
+            animation: fadeUp .35s both;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+        }
+
+        .info-card h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .info-card p {
+            font-size: 13px;
+            color: var(--mid);
+            line-height: 1.6;
+        }
+
+        /* Estilo común para tarjetas con imagen (Comer y Dormir) */
+        .image-card {
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 14px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            animation: fadeUp .35s both;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            color: white;
+        }
+
+        /* Degradado interno más denso (para que se lea bien y se vea la imagen) */
+        .image-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, rgba(15, 15, 20, 0.93), rgba(0, 0, 0, 0.4) 70%, rgba(0, 0, 0, 0.15));
+            border-radius: inherit;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .image-card h3, .image-card p {
+            position: relative;
+            z-index: 2;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        .image-card h3 {
+            font-size: 14px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: white;
+        }
+
+        .image-card p {
+            font-size: 13px;
+            line-height: 1.5;
+            color: #f5f5f5;
+        }
+
+        /* Hero card (no se modifica) */
+        .info-card.hero {
+            position: relative;
+            padding: 0;
+            overflow: hidden;
+            min-height: 280px;
+            border-radius: var(--radius);
+            background: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.75)),
+                url(https://turismomonfrague.es/wp-content/uploads/2021/12/Malpartida-de-Plasencia_PGE_ON-2-e1643890328358.jpg) center/cover no-repeat;
+            color: white;
+        }
+
+        .hero-content {
+            padding: 28px 20px 32px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            height: 100%;
+        }
+
+        .info-card.hero h3 {
+            color: white;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+        }
+
+        .info-card.hero p {
+            color: #f0f0f0;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+        }
+
+        /* ¿Qué hacer? */
+        .activity-placeholder {
+            padding: 20px 20px 10px 20px;
+            text-align: center;
+            animation: fadeUp .4s both;
+        }
+
+        .activity-placeholder p {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--mid);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+            padding: 0 16px 20px;
+        }
+
+        .card-activity {
+            border-radius: var(--radius);
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-end;
+            gap: 5px;
+            cursor: pointer;
+            min-height: 106px;
+            border: none;
+            text-align: left;
+            outline: none;
+            appearance: none;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(18px) scale(0.96);
+            animation: cardIn .45s cubic-bezier(.22, .68, 0, 1.2) forwards;
+            background-color: #7a8c3e;
+            color: #fff;
+        }
+
+        .card-activity i, .card-activity span {
+            color: #fff;
+        }
+
+        /* Estilo para la descripción gastronómica */
+        .gastro-description {
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--mid);
+            background: #fff;
+            padding: 14px;
+            border-radius: var(--radius);
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: none; }
+        }
+
+        @keyframes cardIn {
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Selector de Idioma -->
+    <div id="language-screen">
+        <div class="lang-container">
+            <img src="logo2.png" alt="Logo Horeca" style="width: 90%;">
+            <p>Selecciona tu idioma / Select your language</p>
+            <div class="languages">
+                <button class="lang-option" onclick="changeLanguage('es', event)">
+                    <img src="https://flagcdn.com/es.svg" width="70" alt="Español">
+                </button>
+                <button class="lang-option" onclick="changeLanguage('en', event)">
+                    <img src="https://flagcdn.com/gb.svg" width="70" alt="English">
+                </button>
+                <button class="lang-option" onclick="changeLanguage('fr', event)">
+                    <img src="https://flagcdn.com/fr.svg" width="70" alt="Français">
+                </button>
+                <button class="lang-option" onclick="changeLanguage('pt', event)">
+                    <img src="https://flagcdn.com/pt.svg" width="70" alt="Português">
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Principal -->
+    <div id="main-app" class="page">
+        <header>
+            <h1 class="logo">Guía HORECA Chinata</h1>
+        </header>
+        <section class="hero">
+            <h2 id="hero-title">Descubre Malpartida de Plasencia</h2>
+            <p id="hero-subtitle">Tu guía completa de gastronomía, alojamiento y experiencias</p>
+        </section>
+        <div class="cards-grid">
+            <div class="card card-conoce" onclick="openDetail(0, event)">
+                <div class="card-icon"><i class="ti ti-map-pin" style="font-size: 3.2rem;"></i></div>
+                <div class="card-body"><h3 id="card1-title">Conoce Malpartida de Plasencia</h3></div>
+            </div>
+            <div class="card card-hacer" onclick="openDetail(1, event)">
+                <div class="card-icon"><i class="ti ti-compass" style="font-size: 3.2rem;"></i></div>
+                <div class="card-body"><h3 id="card2-title">¿Qué hacer?</h3></div>
+            </div>
+            <div class="card card-comer" onclick="openDetail(2, event)">
+                <div class="card-icon"><i class="ti ti-chef-hat" style="font-size: 3.2rem;"></i></div>
+                <div class="card-body"><h3 id="card3-title">¿Dónde comer?</h3></div>
+            </div>
+            <div class="card card-dormir" onclick="openDetail(3, event)">
+                <div class="card-icon"><i class="ti ti-bed" style="font-size: 3.2rem; color: #ffffff"></i></div>
+                <div class="card-body"><h3 id="card4-title" style="color: #ffffff">¿Dónde dormir?</h3></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla Detalle -->
+    <div id="detail-screen" class="page">
+        <div class="detail-header" id="detail-header">
+            <button class="back-btn" id="back-btn" onclick="goHome(event)">←</button>
+            <h2 id="detail-title"></h2>
+        </div>
+        <div class="main-content" id="detail-content"></div>
+    </div>
+
+    <!-- Footer fijo global -->
+    <div class="global-footer" id="global-footer">
+        <div class="footer-text" id="footer-support">Con el apoyo de</div>
+        <div class="logos-container"><img src="logos.png" alt="Colaboradores"></div>
+    </div>
+
+    <script>
+        // Traducciones completas (mismo contenido que la versión funcional anterior)
+        const translations = {
+            es: {
+                heroTitle: "Descubre Malpartida de Plasencia",
+                heroSub: "Tu guía completa de gastronomía, alojamiento y experiencias",
+                cards: ["Conoce Malpartida de Plasencia", "¿Qué hacer?", "¿Dónde comer?", "¿Dónde dormir?"],
+                footer: "Con el apoyo de",
+                who: "¿Quiénes somos?",
+                whoDesc: "Municipio de Monfragüe, entre dehesas y olivares. 4.600 hab. tradición agraria y turismo rural.",
+                historyTitle: "Historia",
+                historyDesc: "El origen 'chinatos': defendieron el pueblo lanzando piedras (chinarros) ante los placentinos.",
+                natureTitle: "Entorno natural",
+                natureDesc: `<strong>🌿 Centro de Visitantes Norte del Parque Nacional de Monfragüe</strong><br>A 6 km del casco urbano, junto al camping y la estación de tren. Edificio moderno de 2.000 m² con sala expositiva, audiovisuales, interactivos y maquetas.<br><br>
+                            <strong>🚂 Poblado de Estación empalme-Monfragüe</strong><br>Antigua estación de trenes con interesante arquitectura; llegó a tener cerca de 1000 habitantes.<br><br>
+                            <strong>🌳 Dehesa Boyar el Robledo</strong><br>Espacio natural de robles y berrocales. Rutas para senderistas y aventureros. Destacan restos arqueológicos: Tumba de la Princesa, tumbas antropomorfas, menhires, cerro de los Castillejos.<br><br>
+                            <strong>💧 Entorno de San Cristóbal - Pantano</strong><br>A 4 km del pueblo (Horco del Espino). Paraje de pinos con merendero e instalaciones. Embalse con embarcadero para piragüismo y kayak. En julio se celebra la fiesta de San Cristóbal.`,
+                interestTitle: "Datos de interés",
+                interestDesc: "Altitud 395m | Provincia Cáceres | Fiesta: Abril (La Luz)",
+                visitTitle: "Qué visitar",
+                churchDesc: "**Iglesia Parroquial de San Juan Bautista** – Principal monumento. Templo del siglo XVI (gótico decadente, renacentista y barroco). BIC desde octubre 2018.",
+                museumDesc: "**Museo Aire Libre Albañilería** – Réplicas a tamaño real de los trabajos de los Concursos de Albañilería. Folleto con imágenes y callejero disponible.",
+                hermitagesDesc: "**Ermitas** – San Blas, San Gregorio (con su crucero), Virgen de la Luz (Patrona) y San Cristóbal. Edificios actuales del siglo XX.",
+                quehacerPlaceholder: "Dentro del entorno de Malpartida de Plasencia tenemos diferentes actividades de las cuales podemos disfrutar al aire libre",
+                actividades: [
+                    { nombre: "Senderismo", icono: "ti ti-hike", desc: "Rutas por el Parque Nacional y dehesas" },
+                    { nombre: "Avistamiento de aves", icono: "ti ti-bird", desc: "Buitre negro, águila imperial, cigüeña negra" },
+                    { nombre: "Visita Centro Visitantes", icono: "ti ti-info-circle", desc: "Exposiciones y mirador del Parque Nacional" },
+                    { nombre: "Patrimonio cultural", icono: "ti ti-building", desc: "Iglesia, ermitas y arquitectura tradicional" },
+                    { nombre: "Rutas en bicicleta", icono: "ti ti-bike", desc: "Caminos rurales y paisajes de Monfragüe" },
+                    { nombre: "Piragüismo / Kayak", icono: "ti ti-water", desc: "Embalse de San Cristóbal, horco del Espino" }
+                ],
+                gastronomiaDesc: "La gastronomía de Malpartida de Plasencia se caracteriza por sus platos tradicionales extremeños, con especial protagonismo de los productos locales como el cerdo ibérico, el queso de cabra, las setas y los embutidos. Entre los platos más emblemáticos destacan la caldereta de cordero, el zorongollo (ensalada de pimientos asados), las migas extremeñas y el gazpacho extremeño. Además, la localidad cuenta con varios restaurantes donde se pueden degustar estas delicias culinarias en un ambiente acogedor.",
+                restaurantes: [
+                    { nombre: "Casa El Moreno", desc: "Bar con buena comida casera y ambiente local.", img: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=250&fit=crop" },
+                    { nombre: "Café-Bar Burguer Orix", desc: "Hamburguesas y comida rápida.", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=250&fit=crop" },
+                    { nombre: "El Habana", desc: "Café-bar con tapas y raciones.", img: "https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?w=400&h=250&fit=crop" },
+                    { nombre: "El Antares", desc: "Café-bar con tapas y buen ambiente.", img: "https://images.unsplash.com/photo-1506354666786-959d6d497f1a?w=400&h=250&fit=crop" },
+                    { nombre: "El Oasis", desc: "Pub y restaurante.", img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=250&fit=crop" },
+                    { nombre: "Las Habazas", desc: "Restaurante de calidad junto al Parque Nacional de Monfragüe. Carnes y productos de la dehesa.", img: "https://images.unsplash.com/photo-1544025162-d76694265947?w=400&h=250&fit=crop" },
+                    { nombre: "Camping de Monfragüe", desc: "Restaurante del camping con menús y comida casera.", img: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=400&h=250&fit=crop" },
+                    { nombre: "Bar-Restaurante La Piscina", desc: "Restaurante con terraza y piscina.", img: "https://images.unsplash.com/photo-1537047902294-62a40c20a6ae?w=400&h=250&fit=crop" },
+                    { nombre: "Churrería 3 Chocolates", desc: "Churros, desayunos y comida para llevar.", img: "https://images.unsplash.com/photo-1640114922803-a7fc20c0e5bd?w=400&h=250&fit=crop" }
+                ],
+                alojamientos: [
+                    { nombre: "Apartamentos Rurales El Trillo", desc: "Acogedores apartamentos rurales con todas las comodidades.", img: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=250&fit=crop" },
+                    { nombre: "Posada de Monfragüe", desc: "Encantadora posada tradicional cerca del Parque Nacional.", img: "https://images.unsplash.com/photo-1542718610-a1d656d1884c?w=400&h=250&fit=crop" },
+                    { nombre: "Hotel Puerta de Monfragüe", desc: "Hotel moderno con excelentes servicios.", img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=250&fit=crop" },
+                    { nombre: "Casa Rural 2 habitaciones", desc: "Casa completa con dos dormitorios, chimenea y barbacoa.", img: "https://images.unsplash.com/photo-1588880331179-bc9b93a8cb5e?w=400&h=250&fit=crop" },
+                    { nombre: "Casa Rural del Corral y Apartamentos", desc: "Amplio complejo rural con jardín.", img: "https://images.unsplash.com/photo-1576941089067-2de3c901e126?w=400&h=250&fit=crop" },
+                    { nombre: "Casa Rural Fuente Vieja", desc: "Antigua casa rehabilitada con encanto rústico.", img: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=250&fit=crop" },
+                    { nombre: "Casa Rural La Tomasa", desc: "Pequeña casa rural muy acogedora.", img: "https://images.unsplash.com/photo-1505693416388-ac5ce068eb82?w=400&h=250&fit=crop" },
+                    { nombre: "Apartamentos Eras Centro", desc: "Apartamentos céntricos ideales para conocer el pueblo.", img: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&h=250&fit=crop" }
+                ]
+            },
+            en: {
+                heroTitle: "Discover Malpartida de Plasencia", heroSub: "Your complete guide", cards: ["Discover Malpartida","What to do?","Where to eat?","Where to sleep?"], footer: "Supported by",
+                who: "About us", whoDesc: "Municipality in Monfragüe, pastures and olive groves. 4,600 inhabitants.",
+                historyTitle: "History", historyDesc: "Nickname 'chinatos' from defending with stones (chinarros).",
+                natureTitle: "Natural surroundings",
+                natureDesc: `<strong>🌿 Monfragüe National Park Northern Visitor Centre</strong><br>6 km from the town...<br><br>...`,
+                interestTitle: "Facts", interestDesc: "Altitude 395m | Province Cáceres | Festival: April",
+                visitTitle: "What to visit",
+                churchDesc: "**St. John the Baptist Parish Church** – Main monument...",
+                museumDesc: "**Open Air Masonry Museum** – Life-size replicas...",
+                hermitagesDesc: "**Hermitages** – San Blas, San Gregorio...",
+                quehacerPlaceholder: "In the surroundings of Malpartida de Plasencia we have different outdoor activities to enjoy",
+                actividades: [
+                    { nombre: "Hiking", icono: "ti ti-hike", desc: "Trails through the National Park" },
+                    { nombre: "Birdwatching", icono: "ti ti-bird", desc: "Black vulture, imperial eagle" },
+                    { nombre: "Visitor Centre", icono: "ti ti-info-circle", desc: "Exhibitions and viewpoint" },
+                    { nombre: "Cultural heritage", icono: "ti ti-building", desc: "Church, hermitages" },
+                    { nombre: "Cycling routes", icono: "ti ti-bike", desc: "Country roads" },
+                    { nombre: "Canoeing / Kayaking", icono: "ti ti-water", desc: "San Cristóbal reservoir" }
+                ],
+                gastronomiaDesc: "The gastronomy of Malpartida de Plasencia is characterized by its traditional Extremaduran dishes...",
+                restaurantes: [
+                    { nombre: "Casa El Moreno", desc: "Traditional bar", img: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=250&fit=crop" },
+                    { nombre: "Burguer Orix", desc: "Burgers", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=250&fit=crop" },
+                    { nombre: "El Habana", desc: "Tapas", img: "https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?w=400&h=250&fit=crop" },
+                    { nombre: "El Antares", desc: "Good atmosphere", img: "https://images.unsplash.com/photo-1506354666786-959d6d497f1a?w=400&h=250&fit=crop" },
+                    { nombre: "El Oasis", desc: "Pub", img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=250&fit=crop" },
+                    { nombre: "Las Habazas", desc: "Dehesa meats", img: "https://images.unsplash.com/photo-1544025162-d76694265947?w=400&h=250&fit=crop" },
+                    { nombre: "Monfragüe Camping", desc: "Camping restaurant", img: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=400&h=250&fit=crop" },
+                    { nombre: "The Pool", desc: "Terrace and pool", img: "https://images.unsplash.com/photo-1537047902294-62a40c20a6ae?w=400&h=250&fit=crop" },
+                    { nombre: "3 Chocolates", desc: "Churros", img: "https://images.unsplash.com/photo-1640114922803-a7fc20c0e5bd?w=400&h=250&fit=crop" }
+                ],
+                alojamientos: [
+                    { nombre: "El Trillo", desc: "Cozy apartments", img: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=250&fit=crop" },
+                    { nombre: "Monfragüe Inn", desc: "Traditional inn", img: "https://images.unsplash.com/photo-1542718610-a1d656d1884c?w=400&h=250&fit=crop" },
+                    { nombre: "Puerta Hotel", desc: "Modern", img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=250&fit=crop" },
+                    { nombre: "2-bedroom House", desc: "Complete house", img: "https://images.unsplash.com/photo-1588880331179-bc9b93a8cb5e?w=400&h=250&fit=crop" },
+                    { nombre: "Del Corral", desc: "Spacious complex", img: "https://images.unsplash.com/photo-1576941089067-2de3c901e126?w=400&h=250&fit=crop" },
+                    { nombre: "Fuente Vieja", desc: "Rustic charm", img: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=250&fit=crop" },
+                    { nombre: "La Tomasa", desc: "Very cozy", img: "https://images.unsplash.com/photo-1505693416388-ac5ce068eb82?w=400&h=250&fit=crop" },
+                    { nombre: "Eras Centro", desc: "Central", img: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&h=250&fit=crop" }
+                ]
+            },
+            fr: {
+                // Contenido reducido para brevedad pero manteniendo estructura
+                heroTitle: "Découvrez Malpartida", heroSub: "Guide gastronomie", cards: ["Découvrir","Que faire?","Où manger?","Où dormir?"], footer: "Avec le soutien de",
+                who: "À propos", whoDesc: "Commune de Monfragüe...",
+                historyTitle: "Histoire", historyDesc: "Surnom 'chinatos'...",
+                natureTitle: "Environnement naturel", natureDesc: "...",
+                interestTitle: "Infos", interestDesc: "Altitude 395m",
+                visitTitle: "À visiter", churchDesc: "Église Saint-Jean-Baptiste", museumDesc: "Musée en plein air", hermitagesDesc: "Hermitages",
+                quehacerPlaceholder: "Activités de plein air",
+                actividades: [{ nombre: "Randonnée", icono: "ti ti-hike", desc: "Sentiers" }],
+                gastronomiaDesc: "La gastronomie de Malpartida...",
+                restaurantes: [{ nombre: "Casa El Moreno", desc: "Cuisine maison", img: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=250&fit=crop" }],
+                alojamientos: [{ nombre: "El Trillo", desc: "Appartements", img: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=250&fit=crop" }]
+            },
+            pt: {
+                heroTitle: "Descubra Malpartida", heroSub: "Guia gastronomia", cards: ["Conhecer","O que fazer?","Onde comer?","Onde dormir?"], footer: "Com o apoio de",
+                who: "Sobre nós", whoDesc: "Município de Monfragüe...",
+                historyTitle: "História", historyDesc: "Apelido 'chinatos'...",
+                natureTitle: "Ambiente natural", natureDesc: "...",
+                interestTitle: "Dados", interestDesc: "Altitude 395m",
+                visitTitle: "O que visitar", churchDesc: "Igreja de São João Batista", museumDesc: "Museu ao ar livre", hermitagesDesc: "Ermidas",
+                quehacerPlaceholder: "Atividades ao ar livre",
+                actividades: [{ nombre: "Caminhadas", icono: "ti ti-hike", desc: "Trilhas" }],
+                gastronomiaDesc: "A gastronomia de Malpartida...",
+                restaurantes: [{ nombre: "Casa El Moreno", desc: "Comida caseira", img: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=250&fit=crop" }],
+                alojamientos: [{ nombre: "El Trillo", desc: "Apartamentos", img: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=250&fit=crop" }]
+            }
+        };
+
+        let currentLang = 'es';
+
+        function addRipple(btn, e) { if (!btn || !e) return; const rect = btn.getBoundingClientRect(); const size = Math.max(rect.width, rect.height); const x = e.clientX - rect.left - size/2; const y = e.clientY - rect.top - size/2; const ripple = document.createElement('span'); ripple.className = 'ripple'; ripple.style.cssText = `width:${size}px;height:${size}px;left:${x}px;top:${y}px`; btn.style.position = 'relative'; btn.style.overflow = 'hidden'; btn.appendChild(ripple); setTimeout(() => ripple.remove(), 600); }
+
+        function transitionTo(fromId, toId, direction) { const from = document.getElementById(fromId); const to = document.getElementById(toId); if (!from || !to) return; const outClass = direction === 'forward' ? 'slide-out' : 'slide-out-back'; const inClass = direction === 'forward' ? 'slide-in' : 'slide-in-back'; from.classList.add(outClass); setTimeout(() => { from.classList.remove('active', outClass); to.classList.add('active', inClass); setTimeout(() => to.classList.remove(inClass), 350); const scrollArea = to.querySelector('.scroll-body, .main-content'); if (scrollArea) scrollArea.scrollTop = 0; }, 70); }
+
+        function changeLanguage(lang, event) { if (event && event.currentTarget) addRipple(event.currentTarget, event); currentLang = lang; const t = translations[lang]; document.getElementById('hero-title').textContent = t.heroTitle; document.getElementById('hero-subtitle').textContent = t.heroSub; document.getElementById('card1-title').textContent = t.cards[0]; document.getElementById('card2-title').textContent = t.cards[1]; document.getElementById('card3-title').textContent = t.cards[2]; document.getElementById('card4-title').textContent = t.cards[3]; document.getElementById('footer-support').textContent = t.footer; document.getElementById('language-screen').style.display = 'none'; document.getElementById('main-app').classList.add('active'); }
+
+        function openDetail(index, event) {
+            if (event && event.currentTarget) addRipple(event.currentTarget, event);
+            const t = translations[currentLang];
+            const colors = ["#8AB0BE","#7A8C3E","#C2603A","#e8c45a"];
+            // Forzar texto blanco en todas las cabeceras
+            const textColor = "white";
+            document.getElementById('detail-title').textContent = t.cards[index];
+            document.getElementById('detail-title').style.color = textColor;
+            document.getElementById('detail-header').style.background = colors[index];
+            document.getElementById('back-btn').style.color = textColor;
+
+            const content = document.getElementById('detail-content');
+            let html = '';
+
+            if (index === 0) { // CONOCE
+                html = `<div class="screen"><div class="divider"></div><div class="scroll-body"><div class="section"><div class="info-card hero"><div class="hero-content"><h3><i class="ti ti-info-circle"></i> ${t.who}</h3><p>${t.whoDesc}</p></div></div><div class="info-card"><h3><i class="ti ti-history"></i> ${t.historyTitle}</h3><p>${t.historyDesc}</p></div><div class="info-card"><h3><i class="ti ti-trees"></i> ${t.natureTitle}</h3><p>${t.natureDesc}</p></div><div class="info-card"><h3><i class="ti ti-calendar-event"></i> ${t.interestTitle}</h3><p>${t.interestDesc}</p></div><div class="info-card"><h3><i class="ti ti-camera"></i> ${t.visitTitle}</h3><p><strong>🏛️</strong> ${t.churchDesc}</p><p><strong>🛠️</strong> ${t.museumDesc}</p><p><strong>⛪</strong> ${t.hermitagesDesc}</p></div></div></div></div>`;
+            } else if (index === 1) { // QUÉ HACER
+                let gridCards = '';
+                for (let act of t.actividades) {
+                    gridCards += `<button class="card-activity" onclick="addRipple(this, event)"><i class="${act.icono}" style="font-size: 24px;"></i><span style="font-weight: 600;">${act.nombre}</span><small style="font-size: 11px; opacity:0.9;">${act.desc}</small></button>`;
+                }
+                html = `<div style="padding-bottom: 20px;"><div class="activity-placeholder"><p>${t.quehacerPlaceholder}</p></div><div class="divider"></div><div class="grid">${gridCards}</div></div>`;
+            } else if (index === 2) { // COMER
+                let cardsHtml = '';
+                for (let r of t.restaurantes) {
+                    cardsHtml += `<div class="image-card" style="background-image: url('${r.img}');"><h3><i class="ti ti-utensils"></i> ${r.nombre}</h3><p>${r.desc}</p></div>`;
+                }
+                html = `<div class="screen"><div class="scroll-body"><div class="section"><div class="gastro-description">${t.gastronomiaDesc}</div><div class="divider"></div>${cardsHtml}</div></div></div>`;
+            } else if (index === 3) { // DORMIR
+                let cardsHtml = '';
+                for (let a of t.alojamientos) {
+                    cardsHtml += `<div class="image-card" style="background-image: url('${a.img}');"><h3><i class="ti ti-bed"></i> ${a.nombre}</h3><p>${a.desc}</p></div>`;
+                }
+                html = `<div class="screen"><div class="scroll-body"><div class="section"><p class="section-title"><i class="ti ti-building-community"></i> Alojamientos en Malpartida y alrededores</p><div class="divider"></div>${cardsHtml}</div></div></div>`;
+            }
+
+            content.innerHTML = html;
+            transitionTo('main-app', 'detail-screen', 'forward');
+        }
+
+        function goHome(event) {
+            if(event && event.currentTarget) addRipple(event.currentTarget, event);
+            transitionTo('detail-screen', 'main-app', 'back');
+        }
+    </script>
+</body>
+
+</html>
